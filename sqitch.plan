@@ -1,0 +1,4 @@
+%syntax-version=1.0.0
+%project=postgraphile_organizations
+
+organizations [postgraphile_schemas:schemas postgraphile_extensions:uuid-ossp postgraphile_extensions:citext] 2020-04-26T17:56:18Z James E. Marca <james@activimetrics.com> # table for organizations (collections of users)

@@ -1,0 +1,26 @@
+{
+  "name": "postgraphile_organizations",
+  "version": "1.0.0",
+  "description": "Sqitch-based organizations system for postgraphile project.  After postgraphile starter project",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "PGUSER=${PGUSER:=postgres} PGHOST=${PGHOST:=127.0.0.1} PGPORT=${PGPORT:=5432} PGDATABASE=${PGDATABASE:=sqitch} pg_prove test/*.sql",
+    "sqitch:deploy": "PGUSER=${PGUSER:=postgres} PGHOST=${PGHOST:=127.0.0.1} PGPORT=${PGPORT:=5432} PGDATABASE=${PGDATABASE:=sqitch} sqitch deploy",
+    "sqitch:revert": "PGUSER=${PGUSER:=postgres} PGHOST=${PGHOST:=127.0.0.1} PGPORT=${PGPORT:=5432} PGDATABASE=${PGDATABASE:=sqitch} sqitch revert -y",
+    "install": "npm run sqitch:deploy",
+    "uninstall": "npm run sqitch:revert"
+  },
+  "repository": {
+    "type": "git",
+    "url": "gitolite:a/jmarca/postgraphile_related/postgraphile_user_system"
+  },
+  "author": "James E. Marca",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jmarca/postgraphile_user_system/issues"
+  },
+  "homepage": "https://github.com/jmarca/postgraphile_user_system#readme"
+}
