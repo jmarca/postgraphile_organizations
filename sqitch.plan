@@ -2,3 +2,5 @@
 %project=postgraphile_organizations
 
 organizations [postgraphile_schemas:schemas postgraphile_extensions:uuid-ossp postgraphile_extensions:citext] 2020-04-26T17:56:18Z James E. Marca <james@activimetrics.com> # table for organizations (collections of users)
+organization_memberships [organizations postgraphile_user_system:users postgraphile_schemas:schemas postgraphile_extensions:uuid-ossp postgraphile_extensions:citext] 2020-04-27T15:22:44Z James E. Marca <james@activimetrics.com> # table for organization memberships (join table linking users and memberships)
+organization_invitations [organizations postgraphile_user_system:users postgraphile_schemas:schemas postgraphile_extensions:uuid-ossp postgraphile_extensions:citext] 2020-04-27T15:35:02Z James E. Marca <james@activimetrics.com> # table for organization invitations to new members (join table linking user or email and organizations)

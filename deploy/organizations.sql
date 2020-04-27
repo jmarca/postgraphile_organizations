@@ -14,4 +14,8 @@ CREATE TABLE organizations (
       created_at timestamp with time zone NOT NULL  DEFAULT now()
 );
 ALTER TABLE organizations ENABLE ROW LEVEL SECURITY;
+
+grant select on app_public.organizations to :DATABASE_VISITOR;
+grant update(name, slug) on app_public.organizations to :DATABASE_VISITOR;
+
 COMMIT;
