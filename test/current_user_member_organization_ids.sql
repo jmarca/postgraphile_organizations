@@ -21,10 +21,18 @@ insert into app_public.user_emails (user_id, email, is_verified)
 
 -- organization
 INSERT INTO app_public.organizations (slug,name) VALUES ('Marca','The Marca Family');
+INSERT INTO app_public.organizations (slug,name) VALUES ('mousers','Domesticated Hunters');
+
 
 -- membership
 WITH uid(id) as (select id from app_public.users where username='jmarca'),
-     oid(id) as (select id from app_public.organizations where slug='marca'::citext)
+     oid(id) as (select id from app_public.organizations where slug='marca')
+insert into app_public.organization_memberships (user_id, organization_id)
+   select uid.id as user_id, oid.id as organization_id
+   from uid
+   join oid on (true);
+WITH uid(id) as (select id from app_public.users where username='jmarca'),
+     oid(id) as (select id from app_public.organizations where slug='mousers')
 insert into app_public.organization_memberships (user_id, organization_id)
    select uid.id as user_id, oid.id as organization_id
    from uid
@@ -35,15 +43,14 @@ insert into app_public.organization_memberships (user_id, organization_id)
 
 -- without session, should not be able to select
 SET ROLE :DATABASE_VISITOR;
-select results_eq('select * from app_public.current_user_member_organization_ids()',
-                  $$VALUES ((null::uuid)) $$,
-                  'Should not select anything if no session');
+select is_empty('select * from app_public.current_user_member_organization_ids()',
+                  'Should not select from function  if no session');
 
 select is_empty('select id from app_public.organizations',
-                  'Should not select anything if no session');
+                  'Should not select anything from organizations if no session');
 
 select is_empty('select organization_id from app_public.organization_memberships',
-                  'Should not select anything if no session');
+                  'Should not select anything from organization_memberships if no session');
 
 -- set up fake session
 SET ROLE postgres;
@@ -59,7 +66,7 @@ from sid;
 
 prepare organization_is as
     select id from app_public.organizations
-    where slug='marca';
+    where slug in ('marca','mousers');
 
 prepare user_is as
     select id from app_public.users
@@ -75,7 +82,10 @@ select isnt_empty('select organization_id from app_public.organization_membershi
 select results_eq('select organization_id from app_public.organization_memberships',
                   'organization_is',
                   'Should get the marca organization id when is a member');
-
+-- ugh
+select results_eq('select count(*)::integer from app_public.organization_memberships',
+          'select 2::integer',
+          'expect two memberships');
 
 SELECT finish();
 ROLLBACK;

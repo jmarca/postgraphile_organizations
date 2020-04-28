@@ -7,3 +7,4 @@ organization_invitations [organizations postgraphile_user_system:users postgraph
 current_user_member_organization_ids [organization_memberships postgraphile_user_system:current_user_id] 2020-04-27T16:23:28Z James E. Marca <james@activimetrics.com> # function for getting user memberships
 current_user_invited_organization_ids [organization_invitations postgraphile_user_system:current_user_id] 2020-04-27T16:25:02Z James E. Marca <james@activimetrics.com> # function for getting user invitations
 create_organization [organizations] 2020-04-27T23:08:49Z James E. Marca <james@activimetrics.com> # function to create a new organization
+invite_to_organization [postgraphile_user_system:users organizations] 2020-04-27T23:39:18Z James E. Marca <james@activimetrics.com> # function to invite a user to join an organization

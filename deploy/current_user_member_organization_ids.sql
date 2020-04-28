@@ -5,7 +5,7 @@
 BEGIN;
 
 SET SEARCH_PATH TO app_public,public;
-CREATE OR REPLACE FUNCTION current_user_member_organization_ids () RETURNS uuid AS
+CREATE OR REPLACE FUNCTION current_user_member_organization_ids () RETURNS setof uuid AS
 $$
   select organization_id from app_public.organization_memberships
     where user_id = app_public.current_user_id();

@@ -61,15 +61,14 @@ SELECT throws_ok(
 
 -- without session, should not be able to select
 SET ROLE :DATABASE_VISITOR;
-select results_eq('select * from app_public.current_user_invited_organization_ids()',
-                  $$VALUES ((null::uuid)) $$,
-                  'Should not select anything if no session');
+select is_empty('select * from app_public.current_user_invited_organization_ids()',
+                  'Should not be able to call function successfully if no session');
 
 select is_empty('select id from app_public.organizations',
-                  'Should not select anything if no session');
+                  'Should not select anything from organizations if no session');
 
 select is_empty('select organization_id from app_public.organization_invitations',
-                  'Should not select anything if no session');
+                  'Should not select anything organization_invitations if no session');
 
 -- set up fake session
 SET ROLE postgres;
