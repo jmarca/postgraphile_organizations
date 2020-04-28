@@ -14,14 +14,42 @@ SELECT pass('Test current_user_invited_organization_ids!');
 -- create some test data
 -- user
 INSERT INTO app_public.users (username,name) VALUES ('jmarca', 'James E. Marca');
+INSERT INTO app_public.users (username,name) VALUES ('farfalla', 'Kitty A. Katt');
+INSERT INTO app_public.users (username,name) VALUES ('gd', 'Greece Doll');
 
 -- email
 WITH uid(id) as (select id from app_public.users where username='jmarca')
 insert into app_public.user_emails (user_id, email, is_verified)
    select uid.id, 'james@activimeowtricks.com', true from uid;
 
+WITH uid(id) as (select id from app_public.users where username='farfalla')
+insert into app_public.user_emails (user_id, email, is_verified)
+   select uid.id, 'farfalla@activimeowtricks.com', true from uid;
+
+WITH uid(id) as (select id from app_public.users where username='gd')
+insert into app_public.user_emails (user_id, email, is_verified)
+   select uid.id, 'athena@activimeowtricks.com', true from uid;
+
+
 -- organization
 INSERT INTO app_public.organizations (slug,name) VALUES ('Marca','The Marca Family');
+
+-- make current members
+WITH
+o(id) as (select id from app_public.organizations where slug='marca'),
+u(id) as (select id from app_public.users where username='farfalla')
+INSERT INTO app_public.organization_memberships (organization_id, user_id, is_owner, is_billing_contact)
+  select o.id, u.id, true, true
+  from o
+  join u on (true);
+
+WITH
+o(id) as (select id from app_public.organizations where slug='marca'),
+u(id) as (select id from app_public.users where username='gd')
+INSERT INTO app_public.organization_memberships (organization_id, user_id, is_owner, is_billing_contact)
+  select o.id, u.id, false, false
+  from o
+  join u on (true);
 
 -- invitation to membership
 WITH uid(id) as (select id from app_public.users where username='jmarca'),
@@ -38,6 +66,17 @@ insert into app_public.organization_invitations (email, code, organization_id)
    select eml.email as email, 'blahblah code' as code,  oid.id as organization_id
    from eml
    join oid on (true);
+
+
+prepare organization_is as
+  with names(username) as (
+    select 'farfalla' as username
+    union
+    select 'gd' as username)
+  select id,username from app_public.organizations o
+  join names on (true)
+  where o.slug='marca'::citext;
+
 
 -- while I'm here, check the table checks
 prepare failing_insert as
@@ -61,6 +100,9 @@ SELECT throws_ok(
 
 -- without session, should not be able to select
 SET ROLE :DATABASE_VISITOR;
+select is_empty('organization_is',
+                'should not be able to see any organizations');
+
 select is_empty('select * from app_public.current_user_invited_organization_ids()',
                   'Should not be able to call function successfully if no session');
 
@@ -70,8 +112,12 @@ select is_empty('select id from app_public.organizations',
 select is_empty('select organization_id from app_public.organization_invitations',
                   'Should not select anything organization_invitations if no session');
 
+select is_empty('select organization_id from app_public.organization_memberships',
+                  'Should not select anything organization_memberships if no session');
+
 -- set up fake session
 SET ROLE postgres;
+
 with uid(id) as (select id from app_public.users where username='jmarca')
 insert into app_private.sessions (user_id)
    select uid.id  from uid;
@@ -82,33 +128,28 @@ sid(uuid) as (select uuid from app_private.sessions s join uid u on (u.id=s.user
 select set_config('jwt.claims.session_id', sid.uuid::text, true)
 from sid;
 
-prepare organization_is as
-    select id from app_public.organizations
-    where slug='marca'::citext;
-
 prepare user_is as
     select id from app_public.users
     where username='jmarca';
 
 SET ROLE :DATABASE_VISITOR;
 
-select results_eq('select organization_id from app_public.organization_invitations order by organization_id limit 1',
-                  'organization_is',
-                  'Should get the marca organization id when invited to join');
-
-select results_eq('select id from app_public.organizations',
-                  'organization_is',
-                  'Should select something from organizations if is session');
 
 select isnt_empty('select id from app_public.organizations',
                   'Should select something from organizations if is session');
 
-select results_eq('select id from app_public.organizations',
-                  'organization_is',
-                  'Should select something from organizations if is session');
+select isnt_empty('select organization_id,user_id from app_public.organization_memberships',
+                  'Should select something from organization_memberships if is session');
 
-select isnt_empty('select organization_id from app_public.organization_invitations',
-                  'Should select from invitations if is session');
+select is_empty('select organization_id from app_public.organization_invitations',
+                'Should not be able to view invitations');
+
+select is_empty('select organization_id from app_public.organization_invitations order by organization_id limit 1',
+                'The policy applies to organization_memberships, not organization_invitations');
+
+select results_eq('select username from app_public.organization_memberships om join app_public.users u on om.user_id=u.id order by username',
+                  $$VALUES(('farfalla'::citext)), (('gd'::citext)) $$,
+                  'Should be able to view the current members of an organization when invited to join');
 
 
 
