@@ -21,16 +21,16 @@ begin
   select * into v_invitation from app_public.organization_invitations where id = invitation_id;
 
   if v_invitation is null then
-    raise exception 'We could not find that invitation' using errcode = 'NTFND';
+    raise exception 'We could not find that invitation, or that invitation and code is not for you' using errcode = 'DNIED';
   end if;
 
   if v_invitation.user_id is not null then
     if v_invitation.user_id is distinct from app_public.current_user_id() then
-      raise exception 'That invitation is not for you' using errcode = 'DNIED';
+      raise exception 'We could not find that invitation, or that invitation and code is not for you' using errcode = 'DNIED';
     end if;
   else
     if v_invitation.code is distinct from code then
-      raise exception 'Incorrect invitation code' using errcode = 'DNIED';
+      raise exception 'We could not find that invitation, or that invitation and code is not for you' using errcode = 'DNIED';
     end if;
   end if;
 
