@@ -17,7 +17,7 @@ COMMENT ON FUNCTION current_user_invited_organization_ids () is
 create policy select_invited on app_public.organizations
   for select using (id in (select app_public.current_user_invited_organization_ids()));
 
-create policy select_invited on app_public.organization_invitations
+create policy select_invited on app_public.organization_memberships
   for select using (organization_id in (select app_public.current_user_invited_organization_ids()));
 
 

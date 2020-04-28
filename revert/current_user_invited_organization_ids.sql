@@ -6,7 +6,7 @@ SET SEARCH_PATH TO app_public,public;
 
 
 DROP POLICY select_invited on app_public.organizations;
-DROP POLICY select_invited on app_public.organization_invitations;
+DROP POLICY select_invited on app_public.organization_memberships;
 DROP FUNCTION current_user_invited_organization_ids();
 
 COMMIT;
