@@ -8,7 +8,7 @@ SELECT no_plan();
 
 SET search_path TO app_public,public;
 
-SELECT pass('Test organizations_current_user_is_owner!');
+SELECT pass('Test organizations_current_user_is_billing_contact!');
 
 -- test your function --
 -- create some test data
@@ -91,9 +91,9 @@ from sid;
 
 SET ROLE :DATABASE_VISITOR;
 
-select results_eq('select o.slug, app_public.organizations_current_user_is_owner(o.*) from app_public.organizations o',
-  $$VALUES('Marca'::citext, true), ('dolls', false)$$,
-  'should get only the member organizations, and ownership of same');
+select results_eq('select o.slug, app_public.organizations_current_user_is_billing_contact(o.*) from app_public.organizations o order by slug',
+  $$VALUES ('dolls', false), ('Marca'::citext, true)$$,
+  'should get only the member organizations, and billing contact of same');
 
 set role postgres;
 
@@ -109,10 +109,9 @@ from sid;
 
 SET ROLE :DATABASE_VISITOR;
 
-select results_eq('select o.slug, app_public.organizations_current_user_is_owner(o.*) from app_public.organizations o order by slug',
+select results_eq('select o.slug, app_public.organizations_current_user_is_billing_contact(o.*) from app_public.organizations o order by slug',
   $$VALUES ('dolls', true), ('Marca'::citext, false) $$,
-  'should get only the member organizations, and ownership of same');
-
+  'should get only the member organizations, and billing contact of same');
 
 SELECT finish();
 ROLLBACK;

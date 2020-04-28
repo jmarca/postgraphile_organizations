@@ -1,4 +1,4 @@
--- Deploy postgraphile_organizations:organizations_current_user_is_owner to pg
+-- Deploy postgraphile_organizations:organizations_current_user_is_billing_contact to pg
 -- requires: postgraphile_user_system:users
 -- requires: postgraphile_user_system:current_user_id
 -- requires: organizations
@@ -6,7 +6,7 @@
 BEGIN;
 
 SET SEARCH_PATH TO app_public,public;
-CREATE OR REPLACE FUNCTION organizations_current_user_is_owner (
+CREATE OR REPLACE FUNCTION organizations_current_user_is_billing_contact (
   org app_public.organizations) RETURNS boolean AS
 $$
   select exists(
@@ -14,12 +14,16 @@ $$
     from app_public.organization_memberships
     where organization_id = org.id
     and user_id = app_public.current_user_id()
-    and is_owner is true
+    and is_billing_contact is true
   )
 $$ language sql stable;
 
-COMMENT ON FUNCTION organizations_current_user_is_owner (organizations) is
-  E'Given an organizations row, check if the current user is the owner';
+
+COMMENT ON FUNCTION organizations_current_user_is_billing_contact (organizations) is
+  E'Given an organizations row, check if the current user is the billing contact';
+
+
+
 
 
 COMMIT;
