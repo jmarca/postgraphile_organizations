@@ -15,5 +15,4 @@ select 1/count(*)
 from pg_policy p
 join pg_class c on (c.oid=p.polrelid)
 where c.relname='organization_invitations' and p.polname='select_invited';
-
 ROLLBACK;
