@@ -41,7 +41,7 @@ end;
 $$ language plpgsql volatile security definer set search_path to pg_catalog, public, pg_temp;
 
 COMMENT ON FUNCTION transfer_organization_ownership (uuid, uuid) is
-  E'Function to transfer organization ownership from one user to another.  Must be called by the current owner''s account.';
+  E'Function to transfer organization ownership from one user to another.  Must be called by the current owner''s account.  The new billing contact must already be a member of the organization.';
 
 
 
