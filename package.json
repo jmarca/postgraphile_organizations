@@ -13,6 +13,17 @@
     "install": "npm run sqitch:deploy",
     "uninstall": "npm run sqitch:revert"
   },
+    "_exhaustive_dependencies": {
+        "postgraphile_roles": "git+ssh://gitolite:a/jmarca/postgraphile_related/postgraphile_roles"
+        "postgraphile_schemas": "git+ssh://gitolite:a/jmarca/postgraphile_related/postgraphile_schemas",
+        "postgraphile_utility_functions": "git+ssh://gitolite:a/jmarca/postgraphile_related/postgraphile_utility_functions",
+        "postgraphile_extensions": "git+ssh://gitolite:a/jmarca/postgraphile_related/postgraphile_extensions",
+        "postgraphile_graphile_worker": "git+ssh://gitolite:a/jmarca/postgraphile_related/postgraphile_graphile_worker",
+        "postgraphile_user_system": "git+ssh://gitolite:a/jmarca/postgraphile_related/postgraphile_user_system"
+    },
+    "dependencies": {
+        "postgraphile_user_system": "git+ssh://gitolite:a/jmarca/postgraphile_related/postgraphile_user_system"
+    },
   "repository": {
     "type": "git",
     "url": "gitolite:a/jmarca/postgraphile_related/postgraphile_user_system"
